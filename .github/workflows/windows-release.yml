@@ -1,0 +1,49 @@
+name: Windows installer release
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/windows-release.yml
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+  release:
+    needs: validate
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run dist
+      - name: Publish experimental installer
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          @'
+          Experimental Windows x64 release with Turkish UI, WireGuard profile support, SSH connection settings and an exportable authenticated VPS/MCP component.
+
+          This unsigned installer requires the official WireGuard client and your own working VPN profile. VPS deployment and browser AI connectors require additional setup. No VPN servers, credentials, OAuth or turnkey browser integrations are included. Local Linux tests cover provider adapters and authenticated MCP requests; actual Contabo/VPN/AI-client interoperability remains unverified. See README.md and management/KURULUM.md.
+          '@ | Set-Content release-notes.md
+          gh release view v0.1.0
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload v0.1.0 dist/setup.exe dist/setup.exe.sha256 --clobber
+          } else {
+            gh release create v0.1.0 dist/setup.exe dist/setup.exe.sha256 --target $env:GITHUB_SHA --title 'Essah VPN v0.1.0 - Experimental Windows release' --notes-file release-notes.md --prerelease
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
