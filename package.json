@@ -1,0 +1,44 @@
+{
+  "name": "essah-vpn",
+  "version": "0.1.0",
+  "description": "A Turkish Windows VPN companion with secure AI API connections",
+  "main": "src/main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "dist": "electron-builder --win nsis --x64 && node scripts/finalize.js"
+  },
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.essah.vpn",
+    "productName": "Essah VPN",
+    "files": [
+      "src/**/*",
+      "package.json",
+      "management/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "artifactName": "EssahInstaller.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "installerLanguages": [
+        "tr_TR"
+      ],
+      "language": "1055",
+      "script": "build/installer.nsi"
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "afterPack": "scripts/after-pack.js"
+  }
+}
