@@ -4,7 +4,7 @@ Name "Essah VPN"
 OutFile "${PROJECT_DIR}\dist\EssahInstaller.exe"
 InstallDir "$LOCALAPPDATA\Programs\Essah VPN"
 RequestExecutionLevel user
-SetCompressor /SOLID lzma
+SetCompressor /SOLID zlib
 !define MUI_ABORTWARNING
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY

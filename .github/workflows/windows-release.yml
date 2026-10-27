@@ -11,8 +11,8 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
@@ -20,15 +20,21 @@ jobs:
       - run: npm test
   release:
     needs: validate
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - run: npm run dist
+      - name: Build Windows installer
+        run: |
+          set -o pipefail
+          npm run dist 2>&1 | tee build.log
+      - name: Report build errors
+        if: failure()
+        run: node -e 'const fs=require("fs"); if(fs.existsSync("build.log")){const s=fs.readFileSync("build.log","utf8").split("\n").slice(-90).join("\n");console.log("::error::"+s.replaceAll("%","%25").replaceAll("\r","%0D").replaceAll("\n","%0A"))}'
       - name: Publish experimental installer
         shell: pwsh
         env:
