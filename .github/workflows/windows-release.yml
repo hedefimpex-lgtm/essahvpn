@@ -5,6 +5,13 @@ on:
     branches: [main]
     paths:
       - .github/workflows/windows-release.yml
+      - package.json
+      - package-lock.json
+      - 'src/**'
+      - 'management/**'
+      - 'scripts/**'
+      - 'build/**'
+      - 'test/**'
 permissions:
   contents: write
 jobs:

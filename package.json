@@ -7,7 +7,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "dist": "electron-builder --win nsis --x64 && node scripts/finalize.js"
+    "dist": "electron-builder --win nsis --x64 --publish never && node scripts/finalize.js"
   },
   "devDependencies": {
     "electron": "45.0.0",
